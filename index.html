@@ -1,466 +1,184 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台球追分记分器</title>
-    
+    <title>金精矿货值计算器</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f9f9f9;
+            padding: 30px;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #4a90e2;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            max-width: 300px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+            outline: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4a90e2;
+        }
+
+        .result h3 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        .warning {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .input-group span {
+            display: block;
+            color: #666;
+            margin-top: 4px;
+            font-size: 12px;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 12px 24px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
-<style>
-    body {
-    font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    width: 100%;
-    margin: 20px;
-}
-
-h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: 600;
-}
-
-.mode-selection {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.mode-selection button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    margin: 0 5px;
-    background-color: #e9ecef;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-.mode-selection button.active {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.mode-selection button:hover {
-    background-color: #45a049;
-}
-
-.hidden {
-    display: none;
-}
-
-#player-names {
-    margin-bottom: 20px;
-}
-
-.player-input {
-    margin-bottom: 15px;
-}
-
-.player-input label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: #555;
-}
-
-.player-input input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    box-sizing: border-box;
-}
-
-.player-score {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.player-score h2 {
-    margin: 0 0 10px 0;
-    font-size: 18px;
-    color: #333;
-}
-
-.player-score p {
-    margin: 0 0 10px 0;
-    font-size: 16px;
-    color: #666;
-}
-
-.player-score button {
-    padding: 8px 12px;
-    margin: 5px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-    font-weight: 500;
-}
-
-.player-score button:nth-child(3) {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.player-score button:nth-child(4) {
-    background-color: #2196F3;
-    color: white;
-}
-
-.player-score button:nth-child(5) {
-    background-color: #FF9800;
-    color: white;
-}
-
-.player-score button:nth-child(6) {
-    background-color: #f44336;
-    color: white;
-}
-
-#action-log {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-#toggle-log {
-    padding: 5px 10px;
-    font-size: 12px;
-    border: none;
-    border-radius: 4px;
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-#log-list {
-    max-height: 150px;
-    overflow-y: auto;
-    list-style-type: none;
-    padding: 0;
-    margin: 10px 0 0 0;
-}
-
-#log-list li {
-    padding: 8px;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-    color: #555;
-}
-
-#reset-btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    margin-top: 20px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
-}
-
-#reset-btn:hover {
-    background-color: #e53935;
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 15px;
-    }
-
-    h1 {
-        font-size: 22px;
-    }
-
-    .mode-selection button {
-        padding: 8px 16px;
-        font-size: 14px;
-    }
-
-    .player-input input {
-        padding: 8px;
-        font-size: 14px;
-    }
-
-    .player-score {
-        padding: 12px;
-    }
-
-    .player-score h2 {
-        font-size: 16px;
-    }
-
-    .player-score p {
-        font-size: 14px;
-    }
-
-    .player-score button {
-        padding: 6px 10px;
-        font-size: 12px;
-    }
-
-    #reset-btn {
-        padding: 10px;
-        font-size: 14px;
-    }
-}
-</style>
 <body>
     <div class="container">
-        <h1>台球追分记分器</h1>
-        <div class="mode-selection">
-            <button id="two-player-mode" class="active">双人模式</button>
-            <button id="three-player-mode">三人模式</button>
+        <h2>金精矿货值计算器</h2>
+        <div class="input-group">
+            <label>毛重 (kg)</label>
+            <input type="number" id="A1" step="0.01" placeholder="输入毛重">
         </div>
-        <div id="player-names" class="hidden"></div>
-        <div id="score-board"></div>
-        <div id="action-log">
-            <h3>操作记录 <button id="toggle-log">显示/隐藏</button></h3>
-            <ul id="log-list"></ul>
+        <div class="input-group">
+            <label>净重 (kg)</label>
+            <input type="number" id="B1" step="0.01" placeholder="输入净重">
         </div>
-        <button id="reset-btn">重置分数</button>
+        <div class="input-group">
+            <label>水分（小数形式）</label>
+            <input type="number" id="C1" step="0.0001" placeholder="例如：0.1524">
+            <span class="warning">注意：15.24%需输入0.1524</span>
+        </div>
+        <div class="input-group">
+            <label>金含量 (g/t)</label>
+            <input type="number" id="D1" step="0.1" placeholder="输入金含量">
+        </div>
+        <div class="input-group">
+            <label>原发票总含金量 (kg)</label>
+            <input type="number" id="E1" step="0.01" placeholder="输入总含金量">
+        </div>
+        <div class="input-group">
+            <label>原发票总货值 (元)</label>
+            <input type="number" id="F1" step="0.01" placeholder="输入总货值">
+        </div>
+        <div class="input-group">
+            <label>总运费 (元)</label>
+            <input type="number" id="G1" step="0.01" placeholder="输入总运费">
+        </div>
+
+        <div class="result">
+            <h3>计算结果</h3>
+            <p>干重 (H1): <span id="H1">0.00000000</span> kg</p>
+            <p>含金量 (I1): <span id="I1">0.00000000</span> kg</p>
+            <p>原发票单价 (J1): <span id="J1">0.00000000</span> 元/kg</p>
+            <p>总货值 (K1): <span id="K1">0.00000000</span> 元</p>
+            <p>报关纯货值 (L1): <span id="L1">0.00000000</span> 元</p>
+        </div>
     </div>
+
     <script>
-        const CLOUDFLARE_WORKER_URL = 'https://soft-flower-14e3.ikl.workers.dev';
-const playerNames = document.getElementById('player-names');
-const scoreBoard = document.getElementById('score-board');
-const logList = document.getElementById('log-list');
-const resetBtn = document.getElementById('reset-btn');
-const twoPlayerModeBtn = document.getElementById('two-player-mode');
-const threePlayerModeBtn = document.getElementById('three-player-mode');
-const toggleLogBtn = document.getElementById('toggle-log');
+        // 实时计算函数
+        function calculate() {
+            // 获取输入值
+            const B1 = parseFloat(document.getElementById('B1').value) || 0;
+            const C1 = parseFloat(document.getElementById('C1').value) || 0;
+            const D1 = parseFloat(document.getElementById('D1').value) || 0;
+            const E1 = parseFloat(document.getElementById('E1').value) || 0;
+            const F1 = parseFloat(document.getElementById('F1').value) || 0;
+            const G1 = parseFloat(document.getElementById('G1').value) || 0;
 
-let currentGameId = null;
-let playerCount = 2;
-let players = [];
-let pollingInterval = null;
-let localLog = [];
-let isResetting = false;
+            // 计算逻辑
+            const H1 = B1 * (1 - C1);
+            const I1 = (H1 * 0.001) * D1;
+            const J1 = E1 === 0 ? 0 : F1 / E1;
+            const K1 = I1 * J1;
+            const L1 = K1 - G1;
 
-// 初始化游戏
-function initGame(count) {
-    playerCount = count;
-    players = Array.from({length: count}, (_, i) => ({
-        id: i + 1,
-        name: `选手 ${i + 1}`,
-        score: 100
-    }));
-
-    playerNames.classList.remove('hidden');
-    localLog = [];
-    createNewGame();
-}
-
-// 创建新游戏
-async function createNewGame() {
-    try {
-        const response = await fetch(`${CLOUDFLARE_WORKER_URL}/games`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                players: players,
-                log: []
-            })
-        });
-        const data = await response.json();
-        currentGameId = data.gameId;
-        window.history.replaceState(null, null, `?game=${currentGameId}`);
-        startPolling();
-    } catch (error) {
-        console.error('创建游戏失败:', error);
-        alert('创建游戏失败，请稍后重试');
-    }
-}
-
-// 加入游戏
-async function joinGame(gameId) {
-    try {
-        const response = await fetch(`${CLOUDFLARE_WORKER_URL}/games/${gameId}`);
-        const data = await response.json();
-        players = data.players;
-        currentGameId = gameId;
-        startPolling();
-        renderUI();
-    } catch (error) {
-        console.error('加入游戏失败:', error);
-        alert('加入游戏失败，请检查游戏ID');
-    }
-}
-
-// 更新分数
-async function updateScore(playerIndex, points) {
-    if (isResetting) return;
-
-    const player = players[playerIndex - 1];
-    player.score += points;
-
-    players.forEach((p, i) => {
-        if (i !== playerIndex - 1) {
-            p.score -= points;
+            // 显示结果（保留八位小数）
+            document.getElementById('H1').textContent = H1.toFixed(8).replace(/(\.\d+?)0+$/, '$1');
+            document.getElementById('I1').textContent = I1.toFixed(8).replace(/(\.\d+?)0+$/, '$1');
+            document.getElementById('J1').textContent = J1.toFixed(8).replace(/(\.\d+?)0+$/, '$1');
+            document.getElementById('K1').textContent = K1.toFixed(8).replace(/(\.\d+?)0+$/, '$1');
+            document.getElementById('L1').textContent = L1.toFixed(8).replace(/(\.\d+?)0+$/, '$1');
         }
-    });
 
-    const action = `${player.name} 得分: ${points}`;
-    localLog.push(action);
-
-    await fetch(`${CLOUDFLARE_WORKER_URL}/games/${currentGameId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            players: players,
-            action: action
-        })
-    });
-
-    renderUI();
-}
-
-// 更新选手名称
-function updatePlayerName(playerIndex, newName) {
-    players[playerIndex - 1].name = newName;
-    renderUI();
-    // 重新聚焦到输入框
-    const input = document.getElementById(`player${playerIndex}`);
-    if (input) {
-        input.focus();
-    }
-}
-
-// 渲染界面
-function renderUI() {
-    playerNames.innerHTML = '';
-    scoreBoard.innerHTML = '';
-
-    players.forEach((player, i) => {
-        const inputDiv = document.createElement('div');
-        inputDiv.className = 'player-input';
-        inputDiv.innerHTML = `
-            <label for="player${i + 1}">选手 ${i + 1}:</label>
-            <input type="text" id="player${i + 1}" value="${player.name}" 
-                   oninput="updatePlayerName(${i + 1}, this.value)">
-        `;
-        playerNames.appendChild(inputDiv);
-    });
-
-    players.forEach((player, i) => {
-        const scoreDiv = document.createElement('div');
-        scoreDiv.className = 'player-score';
-        scoreDiv.innerHTML = `
-            <h2>${player.name}</h2>
-            <p>分数: <span>${player.score}</span></p>
-            <button onclick="updateScore(${i + 1}, 4)">普胜 (+4)</button>
-            <button onclick="updateScore(${i + 1}, 7)">小金 (+7)</button>
-            <button onclick="updateScore(${i + 1}, 10)">大金 (+10)</button>
-            <button onclick="updateScore(${i + 1}, -1)">犯规 (-1)</button>
-        `;
-        scoreBoard.appendChild(scoreDiv);
-    });
-
-    logList.innerHTML = localLog.map(log => `<li>${log}</li>`).join('');
-}
-
-// 开始轮询
-function startPolling() {
-    if (pollingInterval) clearInterval(pollingInterval);
-    pollingInterval = setInterval(async () => {
-        try {
-            const response = await fetch(`${CLOUDFLARE_WORKER_URL}/games/${currentGameId}`);
-            const data = await response.json();
-            players = data.players;
-            renderUI();
-        } catch (error) {
-            console.error('轮询失败:', error);
-        }
-    }, 5000);
-}
-
-// 切换操作记录显示
-toggleLogBtn.addEventListener('click', () => {
-    logList.classList.toggle('hidden');
-});
-
-// 重置分数
-resetBtn.addEventListener('click', async () => {
-    isResetting = true;
-    try {
-        const response = await fetch(`${CLOUDFLARE_WORKER_URL}/games`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                players: players.map(p => ({ ...p, score: 100 })),
-                log: []
-            })
+        // 绑定输入事件
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', calculate);
         });
-        const data = await response.json();
-        currentGameId = data.gameId;
-        window.history.replaceState(null, null, `?game=${currentGameId}`);
-        localLog = [];
-        renderUI();
-    } catch (error) {
-        console.error('重置分数失败:', error);
-        alert('重置分数失败，请稍后重试');
-    } finally {
-        isResetting = false;
-    }
-});
-
-// 初始化
-if (window.location.search.includes('game=')) {
-    const gameId = new URLSearchParams(window.location.search).get('game');
-    joinGame(gameId);
-} else {
-    initGame(2);
-}
-
-// 模式切换
-twoPlayerModeBtn.addEventListener('click', () => {
-    twoPlayerModeBtn.classList.add('active');
-    threePlayerModeBtn.classList.remove('active');
-    initGame(2);
-});
-
-threePlayerModeBtn.addEventListener('click', () => {
-    threePlayerModeBtn.classList.add('active');
-    twoPlayerModeBtn.classList.remove('active');
-    initGame(3);
-});
     </script>
 </body>
 </html>
