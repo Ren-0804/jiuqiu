@@ -1,156 +1,323 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>金精矿货值计算器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多功能工具整合</title>
     <style>
-        body {
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f9f9f9;
-            padding: 30px;
+        }
+
+        body {
+            background: #f0f2f5;
             line-height: 1.6;
             min-height: 100vh;
+            padding: 2rem;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease-in-out;
+            max-width: 1200px;
             width: 100%;
-            max-width: 800px;
         }
 
-        .container:hover {
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .navigation {
+            background: #4a90e2;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            column-gap: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .section {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            max-width: 800px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section:hover {
             transform: translateY(-5px);
         }
 
-        h2 {
-            color: #2c3e50;
-            border-bottom: 3px solid #4a90e2;
-            padding-bottom: 10px;
-            margin-bottom: 30px;
+        /* 金精矿计算器样式 */
+        .calculator {
+            margin-top: 2rem;
         }
 
         .input-group {
-            margin: 20px 0;
+            margin-bottom: 1.5rem;
         }
 
         label {
             display: block;
-            margin-bottom: 6px;
-            font-size: 14px;
+            margin-bottom: 0.5rem;
             color: #666;
-            font-weight: bold;
+            font-weight: 600;
         }
 
         input {
             width: 100%;
             max-width: 300px;
-            padding: 12px;
-            border: 2px solid #ddd;
+            padding: 1rem;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: border-color 0.3s ease;
+            font-size: 0.9rem;
         }
 
         input:focus {
             border-color: #4a90e2;
-            box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
             outline: none;
         }
 
         .result {
-            margin-top: 30px;
-            padding: 20px;
+            margin-top: 2rem;
+            padding: 1.5rem;
             background: #f8f9fa;
             border-radius: 8px;
             border-left: 4px solid #4a90e2;
         }
 
-        .result h3 {
-            color: #333;
-            margin-top: 0;
+        .result p {
+            margin: 0.5rem 0;
         }
 
         .warning {
             color: #e74c3c;
-            font-size: 12px;
-            margin-top: 4px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
         }
 
-        .input-group span {
-            display: block;
-            color: #666;
-            margin-top: 4px;
-            font-size: 12px;
+        /* Excel 数据提取工具样式 */
+        .excel-extractor {
+            margin-top: 2rem;
+        }
+
+        .upload-container {
+            margin-bottom: 1.5rem;
+        }
+
+        #excelFile {
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            transition: border 0.3s ease;
+        }
+
+        #excelFile:hover {
+            border: 1px solid #4a90e2;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         button {
-            margin-top: 30px;
-            padding: 12px 24px;
+            padding: 1rem 1.5rem;
             background: #4a90e2;
-            color: white;
+            color: #fff;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: transform 0.3s ease-in-out;
+            transition: background 0.3s ease;
         }
 
         button:hover {
-            transform: scale(1.05);
+            background: #3a7bc5;
+        }
+
+        #result {
+            padding: 1rem;
+            background: #f0f0f0;
+            border-radius: 4px;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        /* 数据格式转换工具样式 */
+        .data-converter {
+            margin-top: 2rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 10rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .tooltip {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #4CAF50;
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            transition: opacity 0.3s;
+            opacity: 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>金精矿货值计算器</h2>
-        <div class="input-group">
-            <label>毛重 (kg)</label>
-            <input type="number" id="A1" step="0.01" placeholder="输入毛重">
-        </div>
-        <div class="input-group">
-            <label>净重 (kg)</label>
-            <input type="number" id="B1" step="0.01" placeholder="输入净重">
-        </div>
-        <div class="input-group">
-            <label>水分（小数形式）</label>
-            <input type="number" id="C1" step="0.0001" placeholder="例如：0.1524">
-            <span class="warning">注意：15.24%需输入0.1524</span>
-        </div>
-        <div class="input-group">
-            <label>金含量 (g/t)</label>
-            <input type="number" id="D1" step="0.1" placeholder="输入金含量">
-        </div>
-        <div class="input-group">
-            <label>原发票总含金量 (kg)</label>
-            <input type="number" id="E1" step="0.01" placeholder="输入总含金量">
-        </div>
-        <div class="input-group">
-            <label>原发票总货值 (元)</label>
-            <input type="number" id="F1" step="0.01" placeholder="输入总货值">
-        </div>
-        <div class="input-group">
-            <label>总运费 (元)</label>
-            <input type="number" id="G1" step="0.01" placeholder="输入总运费">
+        <div class="header">
+            <h1>多功能工具整合页面</h1>
         </div>
 
-        <div class="result">
-            <h3>计算结果</h3>
-            <p>干重 (H1): <span id="H1">0.00000000</span> kg</p>
-            <p>含金量 (I1): <span id="I1">0.00000000</span> kg</p>
-            <p>原发票单价 (J1): <span id="J1">0.00000000</span> 元/kg</p>
-            <p>总货值 (K1): <span id="K1">0.00000000</span> 元</p>
-            <p>报关纯货值 (L1): <span id="L1">0.00000000</span> 元</p>
+        <!-- 导航标签 -->
+        <div class="navigation">
+            <div class="tab active" onclick="showSection('calculator')">金精矿货值计算器</div>
+            <div class="tab" onclick="showSection('excel-extractor')">Excel 数据提取工具</div>
+            <div class="tab" onclick="showSection('data-converter')">数据格式转换工具</div>
+        </div>
+
+        <!-- 金精矿计算器 -->
+        <div id="calculator" class="section active">
+            <h2>金精矿货值计算器</h2>
+            <div class="input-group">
+                <label>毛重 (kg)</label>
+                <input type="number" id="A1" step="0.01" placeholder="输入毛重">
+            </div>
+            <div class="input-group">
+                <label>净重 (kg)</label>
+                <input type="number" id="B1" step="0.01" placeholder="输入净重">
+            </div>
+            <div class="input-group">
+                <label>水分（小数形式）</label>
+                <input type="number" id="C1" step="0.0001" placeholder="例如：0.1524">
+                <span class="warning">注意：15.24%需输入0.1524</span>
+            </div>
+            <div class="input-group">
+                <label>金含量 (g/t)</label>
+                <input type="number" id="D1" step="0.1" placeholder="输入金含量">
+            </div>
+            <div class="input-group">
+                <label>原发票总含金量 (kg)</label>
+                <input type="number" id="E1" step="0.01" placeholder="输入总含金量">
+            </div>
+            <div class="input-group">
+                <label>原发票总货值 (元)</label>
+                <input type="number" id="F1" step="0.01" placeholder="输入总货值">
+            </div>
+            <div class="input-group">
+                <label>总运费 (元)</label>
+                <input type="number" id="G1" step="0.01" placeholder="输入总运费">
+            </div>
+
+            <div class="result">
+                <h3>计算结果</h3>
+                <p>干重 (H1): <span id="H1">0.00000000</span> kg</p>
+                <p>含金量 (I1): <span id="I1">0.00000000</span> kg</p>
+                <p>原发票单价 (J1): <span id="J1">0.00000000</span> 元/kg</p>
+                <p>总货值 (K1): <span id="K1">0.00000000</span> 元</p>
+                <p>报关纯货值 (L1): <span id="L1">0.00000000</span> 元</p>
+            </div>
+        </div>
+
+        <!-- Excel 数据提取工具 -->
+        <div id="excel-extractor" class="section">
+            <h2>Excel 数据提取工具</h2>
+            <div class="upload-container">
+                <input type="file" id="excelFile" accept=".xlsx,.xls">
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchValue" placeholder="搜索 B 列的值">
+                <button onclick="searchAndCopy()">搜索并复制</button>
+            </div>
+            <div id="result" class="clipboard-text"></div>
+        </div>
+
+        <!-- 数据格式转换工具 -->
+        <div id="data-converter" class="section">
+            <h2>数据格式转换工具</h2>
+            <textarea id="inputData" placeholder="例如：LYGU1675320	3045531-24	5178308"></textarea>
+            <button onclick="convertAndCopy()">转换并复制</button>
+            <div id="tooltip" class="tooltip">已复制！</div>
         </div>
     </div>
 
+    <!-- SheetJS 用于 Excel 数据处理 -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script>
-        // 实时计算函数
+        // 功能切换
+        function showSection(sectionId) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(sec => sec.classList.remove('active'));
+            
+            const selectedTab = document.querySelector(`.tab[onclick*="${sectionId}"]`);
+            const selectedSection = document.getElementById(sectionId);
+            
+            if (selectedTab && selectedSection) {
+                selectedTab.classList.add('active');
+                selectedSection.classList.add('active');
+            }
+        }
+
+        // 金精矿计算器逻辑
         function calculate() {
             // 获取输入值
             const B1 = parseFloat(document.getElementById('B1').value) || 0;
@@ -175,10 +342,108 @@
             document.getElementById('L1').textContent = L1.toFixed(8).replace(/(\.\d+?)0+$/, '$1');
         }
 
-        // 绑定输入事件
-        document.querySelectorAll('input').forEach(input => {
+        // 初始化金精矿计算器输入事件
+        document.querySelectorAll('#calculator input').forEach(input => {
             input.addEventListener('input', calculate);
         });
+
+        // Excel 数据提取工具逻辑
+        async function searchAndCopy() {
+            const fileInput = document.getElementById('excelFile');
+            const searchValue = document.getElementById('searchValue').value.trim();
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = '';
+            resultElement.className = '';
+
+            if (!fileInput.files.length) {
+                resultElement.textContent = '请先上传 Excel 文件';
+                resultElement.className = 'error clipboard-text';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = async (e) => {
+                const data = e.target.result;
+                const workbook = XLSX.read(data, { type: 'binary' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                let found = false;
+                for (const row of json) {
+                    if (row[1] === searchValue) {
+                        const gColumn = row[6]; // G 列
+                        const hColumn = row[7]; // H 列
+                        const resultText = `${gColumn} ${hColumn}`;
+                        try {
+                            await navigator.clipboard.writeText(resultText);
+                            resultElement.textContent = `已复制到剪贴板: ${resultText}`;
+                            resultElement.className = 'success clipboard-text';
+                            found = true;
+                            break;
+                        } catch (err) {
+                            resultElement.textContent = '复制失败，请检查权限';
+                            resultElement.className = 'error clipboard-text';
+                        }
+                    }
+                }
+
+                if (!found) {
+                    resultElement.textContent = '未找到匹配的结果';
+                    resultElement.className = 'error clipboard-text';
+                }
+            };
+
+            try {
+                reader.readAsBinaryString(file);
+            } catch (error) {
+                resultElement.textContent = '文件解析失败，请检查文件格式';
+                resultElement.className = 'error clipboard-text';
+            }
+        }
+
+        // 数据格式转换工具逻辑
+        async function convertAndCopy() {
+            const input = document.getElementById('inputData');
+            const tooltip = document.getElementById('tooltip');
+            const rawInput = input.value.trim();
+
+            if (!rawInput) {
+                alert('请先输入数据！');
+                return;
+            }
+
+            const lines = rawInput.split('\n');
+            let convertedData = '';
+            lines.forEach(line => {
+                if (line.trim()) {
+                    const parts = line.split('\t');
+                    if (parts.length >= 3) {
+                        const code = parts[0];
+                        const seal1 = parts[1];
+                        const seal2 = parts[2];
+                        convertedData += `${code}\n铅封号1：${seal1}\n铅封号2：${seal2}\n\n`;
+                    }
+                }
+            });
+
+            if (convertedData === '') {
+                alert('数据格式不正确，请检查输入');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(convertedData);
+                tooltip.style.opacity = '1';
+                setTimeout(() => {
+                    tooltip.style.opacity = '0';
+                }, 1500);
+            } catch (err) {
+                console.error('复制失败:', err);
+            }
+        }
     </script>
 </body>
 </html>
