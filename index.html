@@ -282,7 +282,7 @@
                 <input type="file" id="excelFile" accept=".xlsx,.xls">
             </div>
             <div class="search-container">
-                <input type="text" id="searchValue" placeholder="搜索 B 列的值">
+                <input type="text" id="searchValue" placeholder="（保留源数据的A-H列到新表格 通过箱号直接搜索铁路铅封和海关铅封并复制到剪切板）">
                 <button onclick="searchAndCopy()">搜索并复制</button>
             </div>
             <div id="result" class="clipboard-text"></div>
@@ -290,8 +290,11 @@
 
         <!-- 数据格式转换工具 -->
         <div id="data-converter" class="section">
-            <h2>数据格式转换工具</h2>
-            <textarea id="inputData" placeholder="例如：LYGU1675320	3045531-24	5178308"></textarea>
+            <h2>数据格式转换工具（）</h2>
+            <textarea id="inputData" placeholder="这三列直接在原来的数据中复制 它可以转换成如下的数据格式---例如：LYGU1675320	3045531-24	5178308》》转换为 LYGU1676179
+铅封号1： 3342422-25 
+铅封号2：5178063
+"></textarea>
             <button onclick="convertAndCopy()">转换并复制</button>
             <div id="tooltip" class="tooltip">已复制！</div>
         </div>
